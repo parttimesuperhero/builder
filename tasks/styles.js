@@ -31,8 +31,8 @@ module.exports = function(gulp){
       .pipe(gulp.dest(config.dest))
   });
 
-  gulp.task('styles:watch', ['sass'], () => {
-     gulp.watch(config.sass.src, ['sass']);
+  gulp.task('styles:watch', ['styles'], () => {
+     gulp.watch(config.sass.src, ['styles']);
   });
 
   // Clean the built directory
