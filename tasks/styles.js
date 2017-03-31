@@ -32,7 +32,7 @@ module.exports = function(gulp){
   });
 
   gulp.task('styles:watch', ['styles'], () => {
-     gulp.watch(config.sass.src, ['styles']);
+     gulp.watch(config.src, ['styles']);
   });
 
   // Clean the built directory
