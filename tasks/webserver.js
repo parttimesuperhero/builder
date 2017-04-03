@@ -5,7 +5,7 @@ const gulp = require('gulp'),
 module.exports = function(gulp){
   // Fires up the localhost test environment
   gulp.task('webserver', ['styles:watch', 'js:watch', 'views:watch'], () => {
-    gulp.src('./demo/')
+    gulp.src('./')
       .pipe(webserver({
         livereload: true,
         directoryListing: false,
