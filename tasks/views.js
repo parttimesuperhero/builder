@@ -9,11 +9,14 @@ const gulp = require('gulp'),
 module.exports = function(gulp){
   const config = {
     'src': './src/views/**/*.pug',
-    'dest': './dist/'
+    'dest': './dist/',
+    'demoSrc': './src/demo/**/*.pug',
+    'demoDest': './demo/',
   };
 
-  gulp.task('views:watch', ['views'], () => {
+  gulp.task('views:watch', ['views', 'views:demo'], () => {
     gulp.watch(config.src, ['views']);
+    gulp.watch(config.demoSrc, ['views:demo']);
   });
 
   gulp.task('views', ['clean:views'], () => {
@@ -22,9 +25,20 @@ module.exports = function(gulp){
       .pipe(gulp.dest(config.dest))
   });
 
+  gulp.task('views:demo', ['clean:demo:views'], () => {
+    return gulp.src(config.demoSrc)
+      .pipe(pug())
+      .pipe(gulp.dest(config.demoDest))
+  });
+
   // Clean the built directory
   gulp.task('clean:views', () => {
   return gulp.src(config.dest + '*.html', { read: false }) // much faster
+    .pipe(rimraf());
+  });
+
+  gulp.task('clean:demo:views', () => {
+  return gulp.src(config.demoDest + '*.html', { read: false }) // much faster
     .pipe(rimraf());
   });
 };

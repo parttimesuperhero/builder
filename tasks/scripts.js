@@ -13,8 +13,11 @@ const gulp = require('gulp'),
 module.exports = function(gulp){
   const config = {
     'src': './src/js/*.js',
-    'dest': './dist/js'
+    'dest': './dist/js',
+    'demoSrc': './src/demo/*.js',
+    'demoDest': './demo/'
   };
+
   gulp.task('js', ['clean:js'], () => {
     gulp.src(config.src, (err, files) => {
       let tasks = files.map( (entry) => {
@@ -38,13 +41,42 @@ module.exports = function(gulp){
     })
   });
 
-  gulp.task('js:watch', ['js'], () => {
-    gulp.watch("./src/js/**.js", ['js']);
+    gulp.task('js:demo', ['clean:demo:js'], () => {
+      gulp.src(config.demoSrc, (err, files) => {
+        let tasks = files.map( (entry) => {
+          return browserify({ entries: [entry] })
+            .transform("babelify", {presets: ["es2015"]})
+            .transform({
+              'global': true,
+              'compress': true,
+              'mangle': true,
+              'minify': true
+            },'uglifyify')
+            .bundle()
+            .pipe(source(entry))
+            .pipe(rename({
+                dirname: '/',
+                extname: '.bundle.js'
+            }))
+            .pipe(gulp.dest(config.demoDest))
+        })
+        es.merge(tasks);
+      })
+    });
+
+  gulp.task('js:watch', ['js', 'js:demo'], () => {
+    gulp.watch(config.src, ['js']);
+    gulp.watch(config.demoSrc, ['js:demo']);
   });
 
   // Clean the built directory
   gulp.task('clean:js', () => {
   return gulp.src(config.dest, { read: false }) // much faster
+    .pipe(rimraf());
+  });
+
+  gulp.task('clean:demo:js', () => {
+  return gulp.src(config.demoDest + '*.js', { read: false }) // much faster
     .pipe(rimraf());
   });
 };
