@@ -26,10 +26,15 @@ module.exports = function(gulp){
       .pipe(sass({
         include: ['./node_modules/../']
       }))
-      .pipe(autoprefixer({
-        browsers: ['>1%', 'last 2 versions']
+      .pipe(cleanCSS({
+        compatibility: 'ie9',
+          level: {
+            2: {
+              all: false, // sets all values to `false`
+              removeDuplicateRules: true // turns on removing duplicate rules
+            }
+          }
       }))
-      .pipe(cleanCSS({compatibility: 'ie9'}))
       .pipe(gulp.dest(config.dest))
   });
 
@@ -46,7 +51,15 @@ module.exports = function(gulp){
       .pipe(autoprefixer({
         browsers: ['>1%', 'last 2 versions']
       }))
-      .pipe(cleanCSS({compatibility: 'ie9'}))
+      .pipe(cleanCSS({
+        compatibility: 'ie9',
+          level: {
+            2: {
+              all: false, // sets all values to `false`
+              removeDuplicateRules: true // turns on removing duplicate rules
+            }
+          }
+      }))
       .pipe(gulp.dest(config.demoDest))
   });
 
