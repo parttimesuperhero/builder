@@ -1,7 +1,9 @@
 // Import Dependancies
 const gulp = require('gulp'),
       pug = require('gulp-pug'),
-      rimraf = require('gulp-rimraf');
+      rimraf = require('gulp-rimraf'),
+      pugData = require('gulp-data'),
+      path = require('path');
 
 /***************************************************
  *  Views Build Tasks
@@ -21,6 +23,9 @@ module.exports = function(gulp){
 
   gulp.task('views', ['clean:views'], () => {
     return gulp.src(config.src)
+      .pipe(pugData(function(file) {
+        return require(file.path.replace('/src/views', '/src/data').replace('.pug', '.json') )
+      }))
       .pipe(pug())
       .pipe(gulp.dest(config.dest))
   });

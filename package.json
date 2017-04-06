@@ -36,5 +36,9 @@
     "uglifyify": "^3.0.4",
     "vinyl-source-stream": "^1.1.0",
     "vinyl-transform": "^1.0.0"
+  },
+  "devDependencies": {
+    "gulp-data": "^1.2.1",
+    "path": "^0.12.7"
   }
 }
