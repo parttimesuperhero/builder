@@ -26,6 +26,7 @@
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^3.1.1",
     "gulp-clean-css": "^3.0.4",
+    "gulp-data": "^1.2.1",
     "gulp-pug": "^3.3.0",
     "gulp-rename": "^1.2.2",
     "gulp-rimraf": "^0.2.1",
@@ -36,9 +37,5 @@
     "uglifyify": "^3.0.4",
     "vinyl-source-stream": "^1.1.0",
     "vinyl-transform": "^1.0.0"
-  },
-  "devDependencies": {
-    "gulp-data": "^1.2.1",
-    "path": "^0.12.7"
   }
 }
