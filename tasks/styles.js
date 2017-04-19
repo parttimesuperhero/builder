@@ -10,7 +10,7 @@ const gulp = require('gulp'),
  ***************************************************/
 module.exports = function(gulp){
   const config = {
-    'src': './src/scss/*.s+(a|c)ss',
+    'src': './src/scss/**/*.s+(a|c)ss',
     'dest': './dist/css',
     'demoSrc': './src/demo/*.s+(a|c)ss',
     'demoDest': './demo/'
