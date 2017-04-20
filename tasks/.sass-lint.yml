@@ -1,4 +1,5 @@
 rules:
     class-name-format:
       - 1
-      - convention: hyphenatedbem
+      - convention: '^([\.\%]?[a-z]*[-]?[a-z0-9\-]*)(\.[a-z0-9\-]*)?(__[a-z0-9]*[-]?[a-z0-9\-]*)?(--[a-z0-9]*[-]?[a-z0-9\-]*)?(\:[a-z]*)*$'
+        convention-explanation: 'Class Name Should folow the format [namespace]_[block]__[element]--[modifier]'
