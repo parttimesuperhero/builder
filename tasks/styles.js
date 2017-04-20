@@ -18,9 +18,7 @@ module.exports = function(gulp){
 
   gulp.task('styles', ['clean:styles'], () => {
     return gulp.src(config.src)
-      .pipe(sassLint({
-        configFile: './.sass-lint.yml'
-      }))
+      .pipe(sassLint())
       .pipe(sassLint.format())
       .pipe(sassLint.failOnError())
       .pipe(sass({
@@ -40,9 +38,7 @@ module.exports = function(gulp){
 
   gulp.task('styles:demo', ['clean:demo:styles'], () => {
     return gulp.src(config.demoSrc)
-      .pipe(sassLint({
-        configFile: './.sass-lint.yml'
-      }))
+      .pipe(sassLint())
       .pipe(sassLint.format())
       .pipe(sassLint.failOnError())
       .pipe(sass({
