@@ -24,6 +24,7 @@
     "browserify": "^14.1.0",
     "event-stream": "^3.3.4",
     "gulp": "^3.9.1",
+    "gulp-assign-to-pug": "^0.2.1",
     "gulp-autoprefixer": "^3.1.1",
     "gulp-clean-css": "^3.0.4",
     "gulp-data": "^1.2.1",
@@ -38,9 +39,5 @@
     "vinyl-source-stream": "^1.1.0",
     "vinyl-transform": "^1.0.0"
   },
-  "sasslintConfig": "./tasks/.sass-lint.yml",
-  "devDependencies": {
-    "gulp-assign-to-pug": "^0.2.1",
-    "gulp-rename": "^1.2.2"
-  }
+  "sasslintConfig": "./tasks/.sass-lint.yml"
 }
