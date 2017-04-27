@@ -13,11 +13,12 @@ const fs = require('fs'),
  *  Views Build Tasks
  ***************************************************/
 module.exports = function(gulp){
+  const directory = fs.realpathSync('./gulpfile.js').replace('/gulpfile.js', '');
   const config = {
-    'src': './src/pages/',
-    'templateSrc': './src/templates/',
-    'dest': './dist/',
-    'defaultLayout': path.normalize(path.join(__dirname, '../src/templates/Layouts/default.pug'))
+    'src': path.join(directory, 'src/pages/'),
+    'templateSrc': path.join(directory, 'src/templates/'),
+    'dest': path.join(directory, 'dist/'),
+    'defaultLayout': path.join(directory, '/src/templates/Layouts/default.pug')
   };
 
   // Walk directory and generate a hierarchical object of contents
@@ -41,8 +42,9 @@ module.exports = function(gulp){
         const isDir = fs.statSync(path.join(src, page)).isDirectory();
         // If so read said directory's index.json file for meta
         const pageMetaSrc = isDir
-          ? path.join('../', src, page, 'index.json')
-          : path.join('../', src, page);
+          ? path.join(src, page, 'index.json')
+          : path.join(src, page);
+
         // read meta information in json file
         pageData = require(pageMetaSrc).meta;
         pageData.fileName = `${path.basename(page).replace('.json', '.html')}`;
