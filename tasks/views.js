@@ -1,11 +1,12 @@
 // Import Dependancies
 const fs = require('fs'),
+      path = require('path'),
       gulp = require('gulp'),
       pug = require('gulp-pug'),
-      rimraf = require('gulp-rimraf'),
       data = require('gulp-data'),
       jsonfile = require('jsonfile'),
-      path = require('path'),
+      rimraf = require('gulp-rimraf'),
+      rename = require("gulp-rename"),
       assignToPug = require('gulp-assign-to-pug');
 
 /***************************************************
@@ -14,26 +15,28 @@ const fs = require('fs'),
 module.exports = function(gulp){
   const config = {
     'src': './src/pages/',
+    'templateSrc': './src/templates/',
     'dest': './dist/',
     'defaultLayout': path.normalize(path.join(__dirname, '../src/templates/Layouts/default.pug'))
   };
 
   // Walk directory and generate a hierarchical object of contents
-  function parseNav(src, child) {
+  function parseNav(src, parent) {
     // Empty Pages Object
-    let pages = {};
+    let pages = [];
     try {
       // Read directory
       let dirContent = fs.readdirSync(src);
 
       // If we're not at the top level, we want to ignore directories index.json file
       // This avoids duplicated 'curcular' JSON references
-      if (child) {
+      if (parent) {
         dirContent = dirContent.filter( file => file !== 'index.json');
       }
 
       // Loop over each file/directory and read the meta data
       dirContent.forEach( page => {
+        let pageData;
         // Is the file a directory?
         const isDir = fs.statSync(path.join(src, page)).isDirectory();
         // If so read said directory's index.json file for meta
@@ -41,18 +44,25 @@ module.exports = function(gulp){
           ? path.join('../', src, page, 'index.json')
           : path.join('../', src, page);
         // read meta information in json file
-        const pageMeta = require(pageMetaSrc).meta;
-
-        pages[pageMeta.pageId] = pageMeta;
+        pageData = require(pageMetaSrc).meta;
+        pageData.fileName = `${path.basename(page).replace('.json', '.html')}`;
+        if (parent) {
+          pageData.parent = parent;
+        }
 
         // If file is a directory, we want to add a children object
         if (isDir) {
-          const children = parseNav(path.join(src, page), true);
+          const children = parseNav(path.join(src, page), `${pageData.parent ? pageData.parent : ''}/${pageData.slug}`);
           // If there are children returned, add them to the object
           if (Object.keys(children).length) {
-            pages[pageMeta.pageId].children = children;
+            pageData.children = children;
           }
         }
+        pages.push(pageData);
+      });
+
+      pages = pages.sort( (a, b) => {
+        return a.menuOrder > b.menuOrder
       });
       return pages;
     } catch (err) {
@@ -66,7 +76,7 @@ module.exports = function(gulp){
     let navigationStructure = parseNav(config.src);
 
     return gulp.src(`${config.src}/**/*.json`)
-      // add nav structure to the data object
+      // Add nav structure to the data object
       .pipe(data( (data) => {
         data.structure = navigationStructure;
         return data
@@ -74,17 +84,18 @@ module.exports = function(gulp){
       // render the templates
       .pipe( assignToPug(config.defaultLayout, {
         basedir: 'src'
-      }) )
+      }))
       .pipe( gulp.dest(config.dest) )
   });
 
   gulp.task('views:watch', ['views'], () => {
-    gulp.watch(config.src, ['views']);
+    gulp.watch(`${config.src}/**/*.*`, ['views']);
+    gulp.watch(`${config.templateSrc}/**/*.*`, ['views']);
   });
 
   // Clean the built directory
   gulp.task('clean:views', () => {
-  return gulp.src(config.dest + '*.html', { read: false }) // much faster
+  return gulp.src(config.dest + '**/*.html', { read: false }) // much faster
     .pipe(rimraf());
   });
 

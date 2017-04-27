@@ -40,6 +40,7 @@
   },
   "sasslintConfig": "./tasks/.sass-lint.yml",
   "devDependencies": {
-    "gulp-assign-to-pug": "^0.2.1"
+    "gulp-assign-to-pug": "^0.2.1",
+    "gulp-rename": "^1.2.2"
   }
 }
