@@ -47,18 +47,21 @@ module.exports = function(gulp){
 
         // read meta information in json file
         pageData = require(pageMetaSrc).meta;
-        pageData.fileName = `${path.basename(page).replace('.json', '.html')}`;
         if (parent) {
           pageData.parent = parent;
         }
 
+
         // If file is a directory, we want to add a children object
         if (isDir) {
+          pageData.link = `${parent ? parent : ''}/${path.basename(page)}/index.html`;
           const children = parseNav(path.join(src, page), `${pageData.parent ? pageData.parent : ''}/${pageData.slug}`);
           // If there are children returned, add them to the object
           if (Object.keys(children).length) {
             pageData.children = children;
           }
+        } else {
+          pageData.link = `${parent ? parent : ''}/${path.basename(page).replace('.json', '.html')}`;
         }
         pages.push(pageData);
       });
