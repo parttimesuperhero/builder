@@ -3,12 +3,12 @@ const fs = require('fs'),
       gulp = require('gulp'),
       webserver = require('gulp-webserver');
 
-const directory = JSON.parse(fs.readFileSync('./package.json')).directory || 'dist';
+const directory = fs.realpathSync('./gulpfile.js').replace('/gulpfile.js', '');
 
 module.exports = function(gulp){
   // Fires up the localhost test environment
   gulp.task('webserver', ['styles:watch', 'js:watch', 'views:watch'], () => {
-    gulp.src(`./${directory}`)
+    gulp.src(`${directory}/dist`)
       .pipe(webserver({
         livereload: true,
         compression: true

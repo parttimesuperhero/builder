@@ -46,15 +46,15 @@ module.exports = function(gulp){
           : path.join(src, page);
 
         // read meta information in json file
-        pageData = require(pageMetaSrc);
-        pageData.meta.fileName = `${path.basename(page).replace('.json', '.html')}`;
+        pageData = require(pageMetaSrc).meta;
+        pageData.fileName = `${path.basename(page).replace('.json', '.html')}`;
         if (parent) {
-          pageData.meta.parent = parent;
+          pageData.parent = parent;
         }
 
         // If file is a directory, we want to add a children object
         if (isDir) {
-          const children = parseNav(path.join(src, page), `${pageData.meta.parent ? pageData.meta.parent : ''}/${pageData.meta.slug}`);
+          const children = parseNav(path.join(src, page), `${pageData.parent ? pageData.parent : ''}/${pageData.slug}`);
           // If there are children returned, add them to the object
           if (Object.keys(children).length) {
             pageData.children = children;
@@ -64,7 +64,7 @@ module.exports = function(gulp){
       });
 
       pages = pages.sort( (a, b) => {
-        return a.meta.menuOrder > b.meta.menuOrder
+        return a.menuOrder > b.menuOrder
       });
       return pages;
     } catch (err) {
@@ -79,13 +79,15 @@ module.exports = function(gulp){
 
     return gulp.src(`${config.src}/**/*.json`)
       // Add nav structure to the data object
-      .pipe(data( (data) => {
+      .pipe(data( (file) => {
+        let data = require(file.path);
         data.structure = navigationStructure;
         return data
       }))
       // render the templates
       .pipe( assignToPug(config.defaultLayout, {
-        basedir: 'src'
+        basedir: 'src',
+
       }))
       .pipe( gulp.dest(config.dest) )
   });
