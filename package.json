@@ -38,5 +38,8 @@
     "vinyl-source-stream": "^1.1.0",
     "vinyl-transform": "^1.0.0"
   },
-  "sasslintConfig": "./tasks/.sass-lint.yml"
+  "sasslintConfig": "./tasks/.sass-lint.yml",
+  "devDependencies": {
+    "gulp-assign-to-pug": "^0.2.1"
+  }
 }
