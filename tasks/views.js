@@ -21,6 +21,12 @@ module.exports = function(gulp){
     'defaultLayout': path.join(directory, '/src/templates/Layouts/default.pug')
   };
 
+  // Node caches require requests, so sever needed to be restarted everytime data was updated
+  function requireUncached( $module ) {
+      delete require.cache[require.resolve( $module )];
+      return require( $module );
+  }
+
   // Walk directory and generate a hierarchical object of contents
   function parseNav(src, parent) {
     // Empty Pages Object
@@ -83,7 +89,7 @@ module.exports = function(gulp){
     return gulp.src(`${config.src}/**/*.json`)
       // Add nav structure to the data object
       .pipe(data( (file) => {
-        let data = require(file.path);
+        let data = requireUncached(file.path);
         data.structure = navigationStructure;
         return data
       }))
