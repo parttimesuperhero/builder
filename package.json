@@ -28,6 +28,7 @@
     "gulp-autoprefixer": "^3.1.1",
     "gulp-clean-css": "^3.0.4",
     "gulp-data": "^1.2.1",
+    "gulp-imagemin": "^3.2.0",
     "gulp-pug": "^3.3.0",
     "gulp-rename": "^1.2.2",
     "gulp-rimraf": "^0.2.1",
