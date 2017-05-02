@@ -87,17 +87,19 @@ module.exports = function(gulp){
   // Also flags parents if child is active
   function parseActive(structure, currentPage) {
     let tmpStructure = structure;
-    let isActive = false;
 
     tmpStructure.map( (page) => {
+      let isActive = false;
+      let childActive = false
       isActive = page.pageId === currentPage;
 
-      if (page.children && !isActive) {
+      if (page.children) {
         parseActive(page.children, currentPage)
-        isActive = page.children.filter( (child) => child.isActive).length > 0;
+
+        childActive = page.children.filter( (child) => child.isActive ).length > 0;
       }
 
-      page.isActive = isActive;
+      page.isActive = isActive || childActive;
     })
 
     return tmpStructure
