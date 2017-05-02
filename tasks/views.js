@@ -33,7 +33,7 @@ module.exports = function(gulp){
     let pages = [];
     try {
       // Read directory
-      let dirContent = fs.readdirSync(src);
+       let dirContent = fs.readdirSync(src).filter( file => file !== '.DS_Store' );
 
       // If we're not at the top level, we want to ignore directories index.json file
       // This avoids duplicated 'curcular' JSON references
