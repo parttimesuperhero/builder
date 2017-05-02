@@ -42,7 +42,7 @@ module.exports = function(gulp){
       }
 
       // Loop over each file/directory and read the meta data
-      dirContent.forEach( page => {
+      dirContent.forEach( (page, i) => {
         let pageData;
         // Is the file a directory?
         const isDir = fs.statSync(path.join(src, page)).isDirectory();
@@ -53,6 +53,7 @@ module.exports = function(gulp){
 
         // read meta information in json file
         pageData = require(pageMetaSrc).meta;
+        pageData.index = i;
         if (parent) {
           pageData.parent = parent;
         }
@@ -82,6 +83,26 @@ module.exports = function(gulp){
     }
   }
 
+  // Check if page currently being parsed should be active in the menu
+  // Also flags parents if child is active
+  function parseActive(structure, currentPage) {
+    let tmpStructure = structure;
+    let isActive = false;
+
+    tmpStructure.map( (page) => {
+      isActive = page.pageId === currentPage;
+
+      if (page.children && !isActive) {
+        parseActive(page.children, currentPage)
+        isActive = page.children.filter( (child) => child.isActive).length > 0;
+      }
+
+      page.isActive = isActive;
+    })
+
+    return tmpStructure
+  }
+
   gulp.task('views', ['clean:views'], () => {
     // Parse directory tree to generate a navigation structure
     let navigationStructure = parseNav(config.src);
@@ -90,7 +111,7 @@ module.exports = function(gulp){
       // Add nav structure to the data object
       .pipe(data( (file) => {
         let data = requireUncached(file.path);
-        data.structure = navigationStructure;
+        data.structure = parseActive(navigationStructure, data.meta.pageId);
         return data
       }))
       // render the templates
