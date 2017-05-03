@@ -115,7 +115,7 @@ module.exports = function(gulp){
       // Add nav structure to the data object
       .pipe(data( (file) => {
         let data = requireUncached(file.path);
-        data = Object.assign({}, siteBaseMeta, data.meta);
+        data.meta = Object.assign({}, siteBaseMeta, data.meta);
         data.structure = parseActive(navigationStructure, data.meta.pageId);
         return data
       }))
