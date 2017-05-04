@@ -1,6 +1,7 @@
 // Import Dependancies
 const gulp = require('gulp'),
-      imagemin = require('gulp-imagemin');
+      imagemin = require('gulp-imagemin'),
+      imageminJpegRecompress = require('imagemin-jpeg-recompress');
 
 
 /***************************************************
@@ -14,7 +15,15 @@ module.exports = function(gulp){
 
   gulp.task('images', ['clean:images'], () => {
     gulp.src(config.src)
-      .pipe(imagemin())
+      .pipe(imagemin([
+        imagemin.gifsicle({interlaced: true}),
+        imageminJpegRecompress({
+          min: 40,
+          max: 60
+        }),
+        imagemin.optipng({optimizationLevel: 5}),
+        imagemin.svgo({plugins: [{removeViewBox: false}]})
+      ]))
       .pipe(gulp.dest(config.dest))
   });
 
