@@ -116,6 +116,7 @@ module.exports = function(gulp){
       .pipe(data( (file) => {
         let data = requireUncached(file.path);
         data.meta = Object.assign({}, siteBaseMeta, data.meta);
+        data.global = Object.assign({}, siteBaseMeta, data.global);
         data.structure = parseActive(navigationStructure, data.meta.pageId);
         return data
       }))
