@@ -109,14 +109,14 @@ module.exports = function(gulp){
     // Parse directory tree to generate a navigation structure
     let navigationStructure = parseNav(config.src);
 
-    const siteBaseMeta = requireUncached(`${config.src}/index.json`).meta;
+    const siteBaseData = requireUncached(`${config.src}/index.json`);
 
     return gulp.src(`${config.src}/**/*.json`)
       // Add nav structure to the data object
       .pipe(data( (file) => {
         let data = requireUncached(file.path);
-        data.meta = Object.assign({}, siteBaseMeta, data.meta);
-        data.global = Object.assign({}, siteBaseMeta, data.global);
+        data.meta = Object.assign({}, siteBaseData.meta, data.meta);
+        data.global = Object.assign({}, siteBaseData.global, data.global);
         data.structure = parseActive(navigationStructure, data.meta.pageId);
         return data
       }))
