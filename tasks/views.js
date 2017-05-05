@@ -28,7 +28,7 @@ module.exports = function(gulp){
   }
 
   // Walk directory and generate a hierarchical object of contents
-  function parseNav(src, parent, parentIndex) {
+  function parseNav(src, parent) {
     // Empty Pages Object
     let pages = [];
     try {
@@ -40,10 +40,6 @@ module.exports = function(gulp){
       if (parent) {
         dirContent = dirContent.filter( file => file !== 'index.json');
       }
-
-      dirContent = dirContent.sort( (a, b) => {
-        return a.menuOrder > b.menuOrder
-      });
 
       // Loop over each file/directory and read the meta data
       dirContent.forEach( (page, i) => {
@@ -60,14 +56,13 @@ module.exports = function(gulp){
         pageData.index = i;
         if (parent) {
           pageData.parent = parent;
-          pageData.index = parentIndex + i;
         }
 
 
         // If file is a directory, we want to add a children object
         if (isDir) {
           pageData.link = `${parent ? parent : ''}/${path.basename(page)}/index.html`;
-          const children = parseNav(path.join(src, page), `${pageData.parent ? pageData.parent : ''}/${pageData.slug}`, i);
+          const children = parseNav(path.join(src, page), `${pageData.parent ? pageData.parent : ''}/${pageData.slug}`);
           // If there are children returned, add them to the object
           if (Object.keys(children).length) {
             pageData.children = children;
@@ -78,6 +73,9 @@ module.exports = function(gulp){
         pages.push(pageData);
       });
 
+      pages = pages.sort( (a, b) => {
+        return a.menuOrder > b.menuOrder
+      });
       return pages;
     } catch (err) {
       console.log(`ERROR:: Directory ${src} has some issues.`);
