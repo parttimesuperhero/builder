@@ -27,10 +27,19 @@ module.exports = function(gulp){
       return require( $module );
   }
 
+  const chunkPages = (array, size) => {
+    const pages = array.map( (e,i) => {
+      return (i % size === 0) ? array.slice(i, i + size) : null
+    });
+
+    return pages.filter( page => page );
+  }
+
   // Walk directory and generate a hierarchical object of contents
-  function parseNav(src, parent) {
+  function parseNav(src, parent, level = 0) {
     // Empty Pages Object
     let pages = [];
+    level = level + 1;
     try {
       // Read directory
        let dirContent = fs.readdirSync(src).filter( file => file !== '.DS_Store' );
@@ -53,16 +62,18 @@ module.exports = function(gulp){
 
         // read meta information in json file
         pageData = require(pageMetaSrc).meta;
+        pageData.level = level;
         pageData.index = i;
         if (parent) {
           pageData.parent = parent;
         }
 
-
         // If file is a directory, we want to add a children object
         if (isDir) {
-          pageData.link = `${parent ? parent : ''}/${path.basename(page)}/index.html`;
-          const children = parseNav(path.join(src, page), `${pageData.parent ? pageData.parent : ''}/${pageData.slug}`);
+          pageData.base = `${parent ? parent : ''}/${path.basename(page)}`;
+          pageData.link = `${pageData.base}/index.html`;
+
+          const children = parseNav(path.join(src, page), `${pageData.parent ? pageData.parent : ''}/${pageData.slug}`, level);
           // If there are children returned, add them to the object
           if (Object.keys(children).length) {
             pageData.children = children;
@@ -70,6 +81,7 @@ module.exports = function(gulp){
         } else {
           pageData.link = `${parent ? parent : ''}/${path.basename(page).replace('.json', '.html')}`;
         }
+
         pages.push(pageData);
       });
 
@@ -90,19 +102,43 @@ module.exports = function(gulp){
 
     tmpStructure.map( (page) => {
       let isActive = false;
-      let childActive = false
+      let childActive = false;
       isActive = page.pageId === currentPage;
 
       if (page.children) {
         parseActive(page.children, currentPage)
-
         childActive = page.children.filter( (child) => child.isActive ).length > 0;
       }
 
       page.isActive = isActive || childActive;
-    })
+    });
 
     return tmpStructure
+  }
+
+  function findLowestActive(pages) {
+    let active = pages.filter( page => page.isActive )[0],
+      childActive = false;
+
+    if(active && active.children) {
+      childActive = findLowestActive(active.children);
+    }
+
+    return childActive ? childActive : active
+  }
+
+  function nestChildren(file, pageId, structure) {
+    const src = file.replace("index.json", "");
+    const active = findLowestActive(structure);
+    let dirContent = fs.readdirSync(src).filter( file => (file !== '.DS_Store' && file !== 'index.json' ) );
+
+    dirContent = dirContent.map( (page, i) => {
+     let data = require(path.join(src, page));
+     data.base = active.base;
+     return data
+    });
+
+    return chunkPages(dirContent, 10)
   }
 
   gulp.task('views', ['clean:views'], () => {
@@ -115,9 +151,15 @@ module.exports = function(gulp){
       // Add nav structure to the data object
       .pipe(data( (file) => {
         let data = requireUncached(file.path);
+        const pageData = parseActive(navigationStructure, data.meta.pageId);
         data.meta = Object.assign({}, siteBaseData.meta, data.meta);
+        data.structure = pageData;
+
+        if (data.meta.nestChildren) {
+          data.nestedChildren = nestChildren(file.path, data.meta.pageId, pageData);
+        }
+
         data.global = Object.assign({}, siteBaseData.global, data.global);
-        data.structure = parseActive(navigationStructure, data.meta.pageId);
         return data
       }))
       // render the templates
