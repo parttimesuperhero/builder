@@ -28,11 +28,9 @@ module.exports = function(gulp){
   }
 
   const chunkPages = (array, size) => {
-    const pages = array.map( (e,i) => {
-      return (i % size === 0) ? array.slice(i, i + size) : null
-    });
-
-    return pages.filter( page => page );
+    return array.sort( (a, b) => a.meta.publishDate - b.meta.publishDate )
+                .map( (e,i) => (i % size === 0) ? array.slice(i, i + size) : null)
+                .filter( page => page );
   }
 
   // Walk directory and generate a hierarchical object of contents
