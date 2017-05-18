@@ -18,7 +18,9 @@ module.exports = function(gulp){
     'src': path.join(directory, 'src/pages/'),
     'templateSrc': path.join(directory, 'src/templates/'),
     'dest': path.join(directory, 'dist/'),
-    'defaultLayout': path.join(directory, '/src/templates/Layouts/default.pug')
+    'layoutPath': path.join(directory, '/src/templates/Layouts'),
+    'defaultLayout': 'default',
+    'layout': 'default'
   };
 
   // Node caches require requests, so sever needed to be restarted everytime data was updated
@@ -125,7 +127,7 @@ module.exports = function(gulp){
     return childActive ? childActive : active
   }
 
-  function nestChildren(file, pageId, structure) {
+  function nestChildren(file, pageId, structure, template) {
     const src = file.replace("index.json", "");
     const active = findLowestActive(structure);
     let dirContent = fs.readdirSync(src).filter( file => (file !== '.DS_Store' && file !== 'index.json' ) );
@@ -139,9 +141,14 @@ module.exports = function(gulp){
     return chunkPages(dirContent, 10)
   }
 
+  function fetchLayout() {
+    console.log("hello")
+    return `${config.layoutPath}/${config.layout}.pug`
+  }
+
   gulp.task('views', ['clean:views'], () => {
     // Parse directory tree to generate a navigation structure
-    let navigationStructure = parseNav(config.src);
+    let navigationStructure = parseNav(config.src)
 
     const siteBaseData = requireUncached(`${config.src}/index.json`);
 
@@ -149,21 +156,23 @@ module.exports = function(gulp){
       // Add nav structure to the data object
       .pipe(data( (file) => {
         let data = requireUncached(file.path);
+        config.layout = data.meta.layout !== undefined ? data.meta.layout : config.defaultLayout;
         const pageData = parseActive(navigationStructure, data.meta.pageId);
         data.meta = Object.assign({}, siteBaseData.meta, data.meta);
         data.structure = pageData;
 
         if (data.meta.nestChildren) {
-          data.nestedChildren = nestChildren(file.path, data.meta.pageId, pageData);
+          data.nestedChildren = nestChildren(file.path, data.meta.pageId, pageData, data.childTemplate);
         }
 
         data.global = Object.assign({}, siteBaseData.global, data.global);
+        console.log(config.layout)
         return data
       }))
       // render the templates
-      .pipe( assignToPug(config.defaultLayout, {
-        basedir: 'src',
-
+      //`${config.layoutPath}/${config.layout}.pug`
+      .pipe( assignToPug(fetchLayout(), {
+        basedir: 'src'
       }))
       .pipe( gulp.dest(config.dest) )
   });

@@ -10,16 +10,17 @@ const gulp = require('gulp'),
 module.exports = function(gulp){
   const config = {
     'src': './src/assets/images/*.*',
+    'bgImages': './src/assets/images/backgrounds/*.*',
     'dest': './dist/images'
   };
 
   gulp.task('images', ['clean:images'], () => {
-    gulp.src(config.src)
+    return gulp.src(config.src)
       .pipe(imagemin([
         imagemin.gifsicle({interlaced: true}),
         imageminJpegRecompress({
           min: 40,
-          max: 60
+          max: 75
         }),
         imagemin.optipng({optimizationLevel: 5}),
         imagemin.svgo({plugins: [{removeViewBox: false}]})
@@ -27,8 +28,24 @@ module.exports = function(gulp){
       .pipe(gulp.dest(config.dest))
   });
 
-  gulp.task('images:watch', ['images'], () => {
+  gulp.task('backgroundImages', ['images'], () => {
+    return gulp.src(config.bgImages)
+      .pipe(imagemin([
+        imagemin.gifsicle({interlaced: true}),
+        imageminJpegRecompress({
+          min: 30,
+          max: 38
+        }),
+        imagemin.optipng({optimizationLevel: 5}),
+        imagemin.svgo({plugins: [{removeViewBox: false}]})
+      ]))
+      .pipe(gulp.dest(config.dest))
+  });
+
+
+  gulp.task('images:watch', ['images', 'backgroundImages'], () => {
     gulp.watch(config.src, ['images']);
+    gulp.watch(config.bgImages, ['backgroundImages']);
   });
 
   // Clean the built directory
