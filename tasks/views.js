@@ -142,14 +142,12 @@ module.exports = function(gulp){
   }
 
   function fetchLayout() {
-    console.log("hello")
     return `${config.layoutPath}/${config.layout}.pug`
   }
 
   gulp.task('views', ['clean:views'], () => {
     // Parse directory tree to generate a navigation structure
     let navigationStructure = parseNav(config.src)
-
     const siteBaseData = requireUncached(`${config.src}/index.json`);
 
     return gulp.src(`${config.src}/**/*.json`)
@@ -166,7 +164,6 @@ module.exports = function(gulp){
         }
 
         data.global = Object.assign({}, siteBaseData.global, data.global);
-        console.log(config.layout)
         return data
       }))
       // render the templates
