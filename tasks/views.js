@@ -29,12 +29,6 @@ module.exports = function(gulp){
       return require( $module );
   }
 
-  const chunkPages = (array, size) => {
-    return array.sort( (a, b) => a.meta.publishDate - b.meta.publishDate )
-                .map( (e,i) => (i % size === 0) ? array.slice(i, i + size) : null)
-                .filter( page => page );
-  }
-
   // Walk directory and generate a hierarchical object of contents
   function parseNav(src, parent, level = 0) {
     // Empty Pages Object
@@ -138,7 +132,7 @@ module.exports = function(gulp){
      return data
     });
 
-    return chunkPages(dirContent, 10)
+    return dirContent
   }
 
   function fetchLayout() {
