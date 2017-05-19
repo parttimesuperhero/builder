@@ -45,7 +45,13 @@ module.exports = function(gulp){
       gulp.src(config.demoSrc, (err, files) => {
         let tasks = files.map( (entry) => {
           return browserify({ entries: [entry] })
-            .transform("babelify", {presets: ["es2015"]})
+            .transform("babelify", {
+              presets: ["es2015"],
+              plugins: [
+                "babel-plugin-syntax-jsx",
+                "babel-plugin-inferno"
+              ]
+            })
             .transform({
               'global': true,
               'compress': true,
