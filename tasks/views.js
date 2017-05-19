@@ -132,7 +132,7 @@ module.exports = function(gulp){
      return data
     });
 
-    return dirContent
+    return dirContent.sort( (a, b) => a.meta.publishDate - b.meta.publishDate )
   }
 
   function fetchLayout() {
