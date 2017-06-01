@@ -26,6 +26,7 @@ module.exports = function(gulp){
             presets: ["es2015"],
             plugins: [
               "babel-plugin-syntax-jsx",
+              "transform-es2015-spread",
               "babel-plugin-inferno"
             ]
           })
