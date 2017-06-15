@@ -3,6 +3,7 @@ const gulp = require('gulp'),
       sass = require('gulp-sass'),
       cleanCSS = require('gulp-clean-css'),
       sassLint = require('gulp-sass-lint'),
+      importer = require('sass-module-importer'),
       autoprefixer = require('gulp-autoprefixer');
 
 /***************************************************
@@ -22,7 +23,7 @@ module.exports = function(gulp){
       .pipe(sassLint.format())
       .pipe(sassLint.failOnError())
       .pipe(sass({
-        include: ['./node_modules/../']
+        importer: importer()
       }))
       .pipe(cleanCSS({
         compatibility: 'ie9',

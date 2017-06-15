@@ -41,6 +41,7 @@
     "gulp-webserver": "^0.9.1",
     "imagemin-jpeg-recompress": "^5.1.0",
     "path": "^0.12.7",
+    "sass-module-importer": "^1.4.0",
     "uglifyify": "^3.0.4",
     "vinyl-source-stream": "^1.1.0",
     "vinyl-transform": "^1.0.0"
