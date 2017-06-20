@@ -4,6 +4,7 @@ const fs = require('fs'),
       gulp = require('gulp'),
       pug = require('gulp-pug'),
       data = require('gulp-data'),
+      cache = require('gulp-cached'),
       jsonfile = require('jsonfile'),
       rimraf = require('gulp-rimraf'),
       rename = require("gulp-rename"),
@@ -145,6 +146,7 @@ module.exports = function(gulp){
     const siteBaseData = requireUncached(`${config.src}/index.json`);
 
     return gulp.src(`${config.src}/**/*.json`)
+      .pipe(cache('views'))
       // Add nav structure to the data object
       .pipe(data( (file) => {
         let data = requireUncached(file.path);
