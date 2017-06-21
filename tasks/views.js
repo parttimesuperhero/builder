@@ -146,7 +146,6 @@ module.exports = function(gulp){
     const siteBaseData = requireUncached(`${config.src}/index.json`);
 
     return gulp.src(`${config.src}/**/*.json`)
-      .pipe(cache('views'))
       // Add nav structure to the data object
       .pipe(data( (file) => {
         let data = requireUncached(file.path);
