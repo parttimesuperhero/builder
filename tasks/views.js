@@ -26,7 +26,7 @@ module.exports = function(gulp){
     'layout': 'default'
   };
 
-  const layout = pug.compile(fetchLayout(), {
+  let layout = pug.compile(fetchLayout(), {
     'basedir': 'src/'
   });
 
@@ -176,8 +176,15 @@ module.exports = function(gulp){
 
   gulp.task('views:watch', ['views'], () => {
     gulp.watch(`${config.src}/**/*.*`, ['views']);
-    gulp.watch(`${config.templateSrc}/**/*.*`, ['views']);
+    gulp.watch(`${config.templateSrc}/**/*.*`, ['updateLayout', 'views']);
   });
+
+  gulp.task('updateLayout', () => {
+    layout = pug.compile(fetchLayout(), {
+      'basedir': 'src/'
+    });
+  });
+
 
   // Clean the built directory
   gulp.task('clean:views', () => {
