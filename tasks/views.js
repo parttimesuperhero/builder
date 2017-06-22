@@ -2,12 +2,14 @@
 const fs = require('fs'),
       path = require('path'),
       gulp = require('gulp'),
-      pug = require('gulp-pug'),
+      pug = require('pug'),
       data = require('gulp-data'),
-      cache = require('gulp-cached'),
       jsonfile = require('jsonfile'),
       rimraf = require('gulp-rimraf'),
       rename = require("gulp-rename"),
+      map = require('map-stream'),
+      buildHTML = require('./buildhtml'),
+      gutil = require('gulp-util'),
       assignToPug = require('gulp-assign-to-pug');
 
 /***************************************************
@@ -23,6 +25,14 @@ module.exports = function(gulp){
     'defaultLayout': 'default',
     'layout': 'default'
   };
+
+  const layout = pug.compile(fetchLayout(), {
+    'basedir': 'src/'
+  });
+
+  // Parse directory tree to generate a navigation structure
+  let navigationStructure = parseNav(config.src)
+  const siteBaseData = requireUncached(`${config.src}/index.json`);
 
   // Node caches require requests, so sever needed to be restarted everytime data was updated
   function requireUncached( $module ) {
@@ -137,35 +147,30 @@ module.exports = function(gulp){
   }
 
   function fetchLayout() {
-    return `${config.layoutPath}/${config.layout}.pug`
+    return fs.readFileSync(`${config.layoutPath}/${config.layout}.pug`, 'utf8')
   }
 
   gulp.task('views', ['clean:views'], () => {
-    // Parse directory tree to generate a navigation structure
-    let navigationStructure = parseNav(config.src)
-    const siteBaseData = requireUncached(`${config.src}/index.json`);
-
     return gulp.src(`${config.src}/**/*.json`)
       // Add nav structure to the data object
       .pipe(data( (file) => {
+        gutil.log(gutil.colors.green('Rendering view:'), file.path);
         let data = requireUncached(file.path);
         config.layout = data.meta.layout !== undefined ? data.meta.layout : config.defaultLayout;
         const pageData = parseActive(navigationStructure, data.meta.pageId);
         data.meta = Object.assign({}, siteBaseData.meta, data.meta);
         data.structure = pageData;
-
         if (data.meta.nestChildren) {
           data.nestedChildren = nestChildren(file.path, data.meta.pageId, pageData, data.childTemplate);
         }
-
         data.global = Object.assign({}, siteBaseData.global, data.global);
         return data
       }))
       // render the templates
-      //`${config.layoutPath}/${config.layout}.pug`
-      .pipe( assignToPug(fetchLayout(), {
-        basedir: 'src'
-      }))
+      .pipe( buildHTML(layout) )
+      .pipe( rename({
+        extname: '.html'
+      }) )
       .pipe( gulp.dest(config.dest) )
   });
 
@@ -176,17 +181,7 @@ module.exports = function(gulp){
 
   // Clean the built directory
   gulp.task('clean:views', () => {
-  return gulp.src(config.dest + '**/*.html', { read: false }) // much faster
+  return gulp.src(config.dest + '**/*.*', { read: false }) // much faster
     .pipe(rimraf());
   });
-
-  // gulp.task('views:demo', ['clean:demo:views'], () => {
-  //   return gulp.src(config.demoSrc)
-  //     .pipe(pug())
-  //     .pipe(gulp.dest(config.demoDest))
-  // });
-  // gulp.task('clean:demo:views', () => {
-  // return gulp.src(config.demoDest + '*.html', { read: false }) // much faster
-  //   .pipe(rimraf());
-  // });
 };
