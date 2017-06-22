@@ -181,7 +181,7 @@ module.exports = function(gulp){
 
   // Clean the built directory
   gulp.task('clean:views', () => {
-  return gulp.src(config.dest + '**/*.*', { read: false }) // much faster
+  return gulp.src(config.dest + '**/*.html', { read: false }) // much faster
     .pipe(rimraf());
   });
 };
