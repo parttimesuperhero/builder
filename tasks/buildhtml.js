@@ -15,6 +15,12 @@ function compile(layout) {
 			return;
 		}
 
+		if (file.data.meta.hidden) {
+			gutil.log(gutil.colors.blue('Skipping Hidden Page:'), file.path);
+			cb(null, null);
+			return;
+		}
+
 		try {
 			file.contents = new Buffer(layout(file.data));
 			this.push(file);
