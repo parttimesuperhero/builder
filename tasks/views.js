@@ -16,7 +16,7 @@ const fs = require('fs'),
  *  Views Build Tasks
  ***************************************************/
 module.exports = function(gulp){
-  const directory = fs.realpathSync('./gulpfile.js').replace('/gulpfile.js', '');
+  const directory = fs.realpathSync('./gulpfile.js').replace('gulpfile.js', '');
   const config = {
     'src': path.join(directory, 'src/pages/'),
     'templateSrc': path.join(directory, 'src/templates/'),
