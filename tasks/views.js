@@ -76,7 +76,7 @@ module.exports = function(gulp){
         // If file is a directory, we want to add a children object
         if (isDir) {
           pageData.base = `${parent ? parent : ''}/${path.basename(page)}`;
-          if (!pageData.hidden) {
+          if (!pageData.placeholder && !pageData.hidden) {
             pageData.link = `${pageData.base}/index.html`;
           }
 

@@ -15,7 +15,7 @@ function compile(layout) {
 			return;
 		}
 
-		if (file.data.meta.hidden) {
+		if (file.data.meta.placeholder) {
 			gutil.log(gutil.colors.blue('Skipping Hidden Page:'), file.path);
 			cb(null, null);
 			return;
