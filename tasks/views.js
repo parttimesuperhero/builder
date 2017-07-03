@@ -76,7 +76,7 @@ module.exports = function(gulp){
         // If file is a directory, we want to add a children object
         if (isDir) {
           pageData.base = `${parent ? parent : ''}/${path.basename(page)}`;
-          if (!pageData.placeholder && !pageData.hidden) {
+          if (!pageData.placeholder && !pageData.hidden && typeof(pageData.link) === 'undefined') {
             pageData.link = `${pageData.base}/index.html`;
           }
 
@@ -85,7 +85,7 @@ module.exports = function(gulp){
           if (Object.keys(children).length) {
             pageData.children = children;
           }
-        } else {
+        } else if (typeof(pageData.link) === 'undefined') {
           pageData.link = `${parent ? parent : ''}/${path.basename(page).replace('.json', '.html')}`;
         }
 
