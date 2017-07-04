@@ -16,7 +16,7 @@ const fs = require('fs'),
  *  Views Build Tasks
  ***************************************************/
 module.exports = function(gulp){
-  const directory = fs.realpathSync('./gulpfile.js').replace('/gulpfile.js', '');
+  const directory = fs.realpathSync('./gulpfile.js').replace('gulpfile.js', '');
   const config = {
     'src': path.join(directory, 'src/pages/'),
     'templateSrc': path.join(directory, 'src/templates/'),
@@ -76,14 +76,16 @@ module.exports = function(gulp){
         // If file is a directory, we want to add a children object
         if (isDir) {
           pageData.base = `${parent ? parent : ''}/${path.basename(page)}`;
-          pageData.link = `${pageData.base}/index.html`;
+          if (!pageData.placeholder && !pageData.hidden && typeof(pageData.link) === 'undefined') {
+            pageData.link = `${pageData.base}/index.html`;
+          }
 
           const children = parseNav(path.join(src, page), `${pageData.parent ? pageData.parent : ''}/${page}`, level);
           // If there are children returned, add them to the object
           if (Object.keys(children).length) {
             pageData.children = children;
           }
-        } else {
+        } else if (typeof(pageData.link) === 'undefined') {
           pageData.link = `${parent ? parent : ''}/${path.basename(page).replace('.json', '.html')}`;
         }
 
