@@ -102,46 +102,13 @@ module.exports = function(gulp){
     }
   }
 
-  // Check if page currently being parsed should be active in the menu
-  // Also flags parents if child is active
-  function parseActive(structure, currentPage) {
-    let tmpStructure = structure;
-
-    tmpStructure.map( (page) => {
-      let isActive = false;
-      let childActive = false;
-      isActive = page.pageId === currentPage;
-
-      if (page.children) {
-        parseActive(page.children, currentPage)
-        childActive = page.children.filter( (child) => child.isActive ).length > 0;
-      }
-
-      page.isActive = isActive || childActive;
-    });
-
-    return tmpStructure
-  }
-
-  function findLowestActive(pages) {
-    let active = pages.filter( page => page.isActive )[0],
-      childActive = false;
-
-    if(active && active.children) {
-      childActive = findLowestActive(active.children);
-    }
-
-    return childActive ? childActive : active
-  }
-
-  function nestChildren(file, pageId, structure, template) {
+  function nestChildren(file, pageId) {
     const src = file.replace("index.json", "");
-    const active = findLowestActive(structure);
     let dirContent = fs.readdirSync(src).filter( file => (file !== '.DS_Store' && file !== 'index.json' ) );
 
     dirContent = dirContent.map( (page, i) => {
      let data = require(path.join(src, page));
-     data.base = active.base;
+     data.base = pageId;
      return data
     });
 
@@ -158,12 +125,10 @@ module.exports = function(gulp){
       .pipe(data( (file) => {
         gutil.log(gutil.colors.green('Rendering view:'), file.path);
         let data = requireUncached(file.path);
-        config.layout = data.meta.layout !== undefined ? data.meta.layout : config.defaultLayout;
-        const pageData = parseActive(navigationStructure, data.meta.pageId);
         data.meta = Object.assign({}, siteBaseData.meta, data.meta);
-        data.structure = pageData;
+        data.structure = navigationStructure;
         if (data.meta.nestChildren) {
-          data.nestedChildren = nestChildren(file.path, data.meta.pageId, pageData, data.childTemplate);
+          data.nestedChildren = nestChildren(file.path, data.meta.pageId);
         }
         data.global = Object.assign({}, siteBaseData.global, data.global);
         return data
