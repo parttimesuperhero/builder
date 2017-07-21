@@ -18,6 +18,7 @@ const fs = require('fs'),
 module.exports = function(gulp){
   const directory = fs.realpathSync('./gulpfile.js').replace('gulpfile.js', '');
   const config = {
+    'htaccessSrc': path.join(directory, 'src/.htaccess'),
     'src': path.join(directory, 'src/pages/'),
     'templateSrc': path.join(directory, 'src/templates/'),
     'dest': path.join(directory, 'dist/'),
@@ -119,7 +120,7 @@ module.exports = function(gulp){
     return fs.readFileSync(`${config.layoutPath}/${config.layout}.pug`, 'utf8')
   }
 
-  gulp.task('views', ['clean:views'], () => {
+  gulp.task('views', ['clean:views', 'htaccess'], () => {
     return gulp.src(`${config.src}/**/*.json`)
       // Add nav structure to the data object
       .pipe(data( (file) => {
@@ -139,6 +140,11 @@ module.exports = function(gulp){
         extname: '.html'
       }) )
       .pipe( gulp.dest(config.dest) )
+  });
+
+  gulp.task('htaccess', () => {
+  return gulp.src(config.htaccessSrc)
+    .pipe( gulp.dest(config.dest) )
   });
 
   gulp.task('views:watch', ['views'], () => {
