@@ -6,5 +6,6 @@ require('./tasks/styles')(gulp);
 require('./tasks/views')(gulp);
 require('./tasks/webserver')(gulp);
 require('./tasks/images')(gulp);
+require('./tasks/sitemap')(gulp);
 
-gulp.task('default', ['styles', 'js', 'views', 'images']);
+gulp.task('default', ['styles', 'js', 'views', 'images', 'sitemap']);
