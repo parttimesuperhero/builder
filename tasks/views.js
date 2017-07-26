@@ -78,7 +78,7 @@ module.exports = function(gulp){
         if (isDir) {
           pageData.base = `${parent ? parent : ''}/${path.basename(page)}`;
           if (!pageData.placeholder && !pageData.hidden && typeof(pageData.link) === 'undefined') {
-            pageData.link = `${pageData.base}/index.html`;
+            pageData.link = `${pageData.base}/index`;
           }
 
           const children = parseNav(path.join(src, page), `${pageData.parent ? pageData.parent : ''}/${page}`, level);
@@ -87,7 +87,7 @@ module.exports = function(gulp){
             pageData.children = children;
           }
         } else if (typeof(pageData.link) === 'undefined') {
-          pageData.link = `${parent ? parent : ''}/${path.basename(page).replace('.json', '.html')}`;
+          pageData.link = `${parent ? parent : ''}/${path.basename(page).replace('.json', '')}`;
         }
 
         pages.push(pageData);
