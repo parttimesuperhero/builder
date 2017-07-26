@@ -12,7 +12,22 @@ module.exports = function(gulp){
     gulp.src(path.join(directory, 'dist'))
       .pipe(webserver({
         livereload: true,
-        compression: true
+        compression: true,
+        middleware: function (req, res, next) {
+          // Stuff to be ignored
+          if (req.url.indexOf('css') >= 0 || req.url.indexOf('js') >= 0 || req.url.indexOf('images') >= 0) {
+            next();
+            return
+          }
+
+          // If `/` is requested. append index to it
+          if (req.url === '/') {
+            req.url = '/index';
+          }
+          const url = req.url + '.html';
+          req.url = url;
+          next();
+        }
       }));
   });
 }
