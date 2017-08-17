@@ -9,8 +9,8 @@ const gulp = require('gulp'),
  ***************************************************/
 module.exports = function(gulp){
   const config = {
-    'src': './src/assets/images/*.*',
-    'bgImages': './src/assets/images/backgrounds/*.*',
+    'src': [ './src/assets/images/**', '!./src/assets/images/backgrounds/**' ],
+    'bgImages': './src/assets/images/backgrounds/**',
     'dest': './dist/images'
   };
 
