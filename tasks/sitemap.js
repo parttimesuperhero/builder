@@ -21,7 +21,7 @@ module.exports = function(gulp){
     .pipe(sitemap({
       siteUrl: 'http://www.starsgroup.com',
       getLoc: function(siteUrl, loc, entry) {
-          return loc.substr(0, loc.lastIndexOf('.')) || loc; // Removes the file extension
+          return loc.substr(0, loc.lastIndexOf('.html')) || loc; // Removes the file extension
       }
     }))
     .pipe(gulp.dest(config.dest));
